@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calc AntiCog</title>
+    <style>
+        body {
+            background: #eee;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        #main {
+            width: 400px;
+            margin: auto;
+            background: #fff;
+            padding-bottom: 25px;
+        }
+        h1 {
+            font-size: 20px;
+            background-color: darkblue;
+            color: white;
+            padding: 5px 15px;
+        }
+        .field {
+            margin: 15px 15px;
+        }
+        .field button {
+            padding: 5px 15px;
+        }
+        .field label {
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        .field input[type="text"] {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .field input[type="checkbox"] {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <form id="main" onsubmit="return false" novalidate>
+        <h1>Calculadora Anti Coagulação</h1>
+        <div class="field">
+            <label>Último INR</label>
+            <input type="text" id="txt_ultimo_inr">
+        </div>
+        <div class="field">
+            <label>Dose atual de Marevan (mg/sem)</label>
+            <input type="text" id="txt_dose_atual_marevan">
+        </div>
+        <div class="field">
+            <input type="checkbox" id="chk_penultimo_inr_faixa">
+            <label>Penúltimo INR na faixa</label>
+        </div>
+        <div class="field">
+            <button id="btn_calcular" type="submit">Calcular nova dose</button>
+        </div>
+        <div class="field">
+            <label>Dose nova (IDEAL) de Marevan (mg/sem)</label>
+            <input type="text" id="txt_dose_ideal_marevan">
+        </div>
+        <div class="field">
+            <label>Dose nova (SUGERIDA) de Marevan (mg/sem)</label>
+            <input type="text" id="txt_dose_sugerida_marevan">
+        </div>
+        <div class="field">
+            <label>Retorno</label>
+            <input type="text" id="txt_data_retorno">
+        </div>
+    </form>
+    <script src='https://cdn.jsdelivr.net/npm/big.js@6.0.0/big.min.js'></script>
+    <script>
+        window.onload = function() {
+            const txt_ultimo_inr = document.querySelector("#txt_ultimo_inr")
+            const txt_dose_atual_marevan = document.querySelector("#txt_dose_atual_marevan")
+            const chk_penultimo_inr_faixa = document.querySelector("#chk_penultimo_inr_faixa")
+            const btn_calcular = document.querySelector("#btn_calcular")
+            const txt_dose_ideal_marevan = document.querySelector("#txt_dose_ideal_marevan")
+            const txt_dose_sugerida_marevan = document.querySelector("#txt_dose_sugerida_marevan")
+            const txt_data_retorno = document.querySelector("#txt_data_retorno")
+
+            txt_ultimo_inr.onblur = function() {
+                txt_ultimo_inr.value = txt_ultimo_inr.value.replace(/,/g, ".")
+            }
+
+            txt_dose_atual_marevan.onblur = function() {
+                txt_dose_atual_marevan.value = txt_dose_atual_marevan.value.replace(/,/g, ".")
+            }
+
+            btn_calcular.onclick = function() {
+                txt_ultimo_inr.value = txt_ultimo_inr.value.replace(/,/g, ".")
+                const ultimo_inr = Big(txt_ultimo_inr.value)
+                txt_dose_atual_marevan.value = txt_dose_atual_marevan.value.replace(/,/g, ".")
+                const dose_atual_marevan = Big(txt_dose_atual_marevan.value)
+                const penultimo_inr_faixa = chk_penultimo_inr_faixa.checked
+
+                let dose_ideal_marevan = ''
+                let data_retorno = ''
+
+                if (ultimo_inr.lt(1.5)) {
+                    dose_ideal_marevan = dose_atual_marevan.times(1.2)
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gte(1.5) && ultimo_inr.lte(1.7)) {
+                    dose_ideal_marevan = dose_atual_marevan.times(1.1)
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gte(1.8) && ultimo_inr.lte(1.9)) {
+                    if (!penultimo_inr_faixa) {
+                        dose_ideal_marevan = dose_atual_marevan.times(1.05)
+                    }
+                    else {
+                        dose_ideal_marevan = dose_atual_marevan
+                    }
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gte(2.0) && ultimo_inr.lte(3.0)) {
+                    dose_ideal_marevan = 'não é preciso alterar a dose'
+                    if (!penultimo_inr_faixa) {
+                        data_retorno = '3 semanas'
+                    }
+                    else {
+                        data_retorno = '8 semanas'
+                    }
+                }
+                else if (ultimo_inr.gte(3.1) && ultimo_inr.lte(3.2)) {
+                    if (!penultimo_inr_faixa) {
+                        dose_ideal_marevan = dose_atual_marevan.times(0.95)
+                    }
+                    else {
+                        dose_ideal_marevan = dose_atual_marevan
+                    }
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gte(3.3) && ultimo_inr.lte(4.0)) {
+                    dose_ideal_marevan = dose_atual_marevan.times(0.9)
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gte(4.0) && ultimo_inr.lte(5.0)) {
+                    dose_ideal_marevan = dose_atual_marevan.times(0.8)
+                    data_retorno = '14 dias'
+                }
+                else if (ultimo_inr.gt(5.0)) {
+                    dose_ideal_marevan = 'redução da dose individualizada'
+                    data_retorno = '7 dias'
+                }
+
+                txt_dose_ideal_marevan.value = dose_ideal_marevan
+                txt_data_retorno.value = data_retorno
+
+                if (typeof dose_ideal_marevan === 'string') {
+                    txt_dose_sugerida_marevan.value = dose_ideal_marevan
+                }
+                else {
+                    let dose_sugerida_marevan = Big(dose_ideal_marevan.div(2.5).toFixed(0)).times(2.5)
+                    let comprimidos = dose_sugerida_marevan.div(5)
+                    txt_dose_sugerida_marevan.value = dose_sugerida_marevan + ' (' + comprimidos + ' comprimidos)'
+                }
+                
+            }
+        }
+    </script>
+</body>
+</html>
+
+<!--
+Se INR menor do que 1,5: elevar a dose em 20%.
+Se INR entre 1,5 e 1,7: elevar a dose em 10%.
+Se INR entre 1,8 e 1,9 e INR anterior entre 2,0 e 3,0: manter a
+mesma dose.
+Se INR entre 1,8 e 1,9 e INR anterior menor do que 2,0: elevar a
+dose em 5%.
+Se INR entre 3,1 e 3,2 e INR anterior entre 2,0 e 3,0: manter a
+mesma dose.
+Se INR entre 3,1 e 3,2 e INR anterior > 3,0: reduzir a dose em 5%.
+Se INR entre 3,3 e 4,0: reduzir a dose em 10%.
+Se INR entre 4,0 e 5,0: reduzir a dose em 20%.
+Se INR maior do que 5,0: análise e discussão individual sobre cada
+caso.
+
+Orientações de seguimento do paciente após avaliação do médico do ambulatório:
+- Se primeiro INR entre 2 e 3, o médico orientará a manutenção do tratamento atual e dará novo pedido de INR com retorno em 3 semanas.
+- Se segundo INR consecutivo entre 2 e 3, o médico orientará a manutenção do tratamento atual e dará novo pedido de INR com retorno em 8 semanas.
+- Se INR menor do que 2, o médico fará aumento da dose da Varfarina. Deverá solicitar novo INR e retorno em 14 dias.
+- Se INR entre 3 e 5, o médico fará redução da dose da Varfarina. Deverá solicitar novo INR e retorno em 14 dias.
+- Se INR maior do que 5, o médico fará redução da dose da Varfarina de forma individualizada conforme orientação do médico preceptor, que utilizará como base o valor do INR e o risco de hemorragia do paciente (escala HAS-BLED). Orientará suspensão temporária da medicação e retomada do tratamento já com a dose ajustada da Varfarina. Deverá solicitar novo INR e retorno em 7 dias.
+-->
