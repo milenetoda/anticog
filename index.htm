@@ -33,14 +33,21 @@
             margin: 15px 15px;
         }
         .field button {
-            padding: 5px 15px;
+            padding: 15px 25px;
+            background-color: rgb(255, 154, 53);
+            border: 0;
+            font-size: 1.2em;
+            border-radius: 25px;
+            -webkit-box-shadow: 5px 5px 15px -3px #000000; 
+            box-shadow: 5px 5px 15px -3px #000000;
         }
         .field label {
             display: inline-block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        .field input[type="text"] {
+        .field input[type="text"],
+        .field input[type="number"] {
             display: block;
             width: 100%;
             box-sizing: border-box;
@@ -52,6 +59,15 @@
         .field input[type="checkbox"] {
             display: inline-block;
         }
+        /* hide input number arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+        input[type=number] {
+        -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body>
@@ -59,11 +75,11 @@
         <h1>Calculadora Anti Coagulação</h1>
         <div class="field">
             <label>Último INR</label>
-            <input type="text" id="txt_ultimo_inr">
+            <input type="number" id="txt_ultimo_inr">
         </div>
         <div class="field">
             <label>Dose atual de Marevan (mg/sem)</label>
-            <input type="text" id="txt_dose_atual_marevan">
+            <input type="number" id="txt_dose_atual_marevan">
         </div>
         <div class="field">
             <input type="checkbox" id="chk_penultimo_inr_faixa">
