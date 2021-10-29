@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calc AntiCog</title>
     <style>
-        body {
-            background: #eee;
+        body, input {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
+        body {
+            background: #eee;
+            margin: 0;
+        }
         #main {
-            width: 400px;
             margin: auto;
             background: #fff;
             padding-bottom: 25px;
+        }
+        @media (min-width: 600px) {
+            #main {
+                width: 400px;
+            }
         }
         h1 {
             font-size: 20px;
             background-color: darkblue;
             color: white;
             padding: 5px 15px;
+            margin: 0;
         }
         .field {
             margin: 15px 15px;
@@ -30,11 +38,16 @@
         .field label {
             display: inline-block;
             margin-bottom: 5px;
+            font-weight: bold;
         }
         .field input[type="text"] {
             display: block;
             width: 100%;
             box-sizing: border-box;
+            font-size: 1.2em;
+        }
+        .field input[type="text"]:read-only {
+            border: 0;
         }
         .field input[type="checkbox"] {
             display: inline-block;
@@ -61,15 +74,15 @@
         </div>
         <div class="field">
             <label>Dose nova (IDEAL) de Marevan (mg/sem)</label>
-            <input type="text" id="txt_dose_ideal_marevan">
+            <input type="text" id="txt_dose_ideal_marevan" readonly>
         </div>
         <div class="field">
             <label>Dose nova (SUGERIDA) de Marevan (mg/sem)</label>
-            <input type="text" id="txt_dose_sugerida_marevan">
+            <input type="text" id="txt_dose_sugerida_marevan" readonly>
         </div>
         <div class="field">
             <label>Retorno</label>
-            <input type="text" id="txt_data_retorno">
+            <input type="text" id="txt_data_retorno" readonly>
         </div>
     </form>
     <script src='https://cdn.jsdelivr.net/npm/big.js@6.0.0/big.min.js'></script>
@@ -158,7 +171,7 @@
                 else {
                     let dose_sugerida_marevan = Big(dose_ideal_marevan.div(2.5).toFixed(0)).times(2.5)
                     let comprimidos = dose_sugerida_marevan.div(5)
-                    txt_dose_sugerida_marevan.value = dose_sugerida_marevan + ' (' + comprimidos + ' comprimidos)'
+                    txt_dose_sugerida_marevan.value = dose_sugerida_marevan + ' (' + comprimidos + ' comprimidos por semana)'
                 }
                 
             }
